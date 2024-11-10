@@ -157,17 +157,18 @@ class AdminScreen:
 
         # Define functions and corresponding icon image paths
         functions = [
-            ("Sales", "sales.png", self.open_sales),
-            ("Inventory", "inventory.png", self.open_inventory),
-            ("Reports", "reports.png", self.open_reports),
-            ("Employees", "employees.png", self.open_employees),
-            ("Settings", "settings.png", self.open_settings),
+            ("Sales", "../ELAX/image/sales_icon.png", self.open_sales),
+            ("Inventory", "../ELAX/image/inventory_icon.png", self.open_inventory),
+            ("Reports", "../ELAX/image/report_icon.png", self.open_reports),
+            ("Employees", "../ELAX/image/employees.png", self.open_employees),
+            ("Settings", "../ELAX/image/settings.png", self.open_settings),
+            ("Purchase", "../ELAX/image/purchase_icon.png", self.open_purchase),
         ]
 
         # Create a button for each function
         for i, (name, image_path, command) in enumerate(functions):
             # Load the image
-            icon_image = Image.open("../ELAX/image/sales_icon.png")
+            icon_image = Image.open("")
             icon_image = icon_image.resize((80, 80))  # Resize to fit the icon size
             icon_photo = ImageTk.PhotoImage(icon_image)
 
@@ -199,6 +200,10 @@ class AdminScreen:
 
     def open_settings(self):
         messagebox.showinfo("Settings", "Opening Settings Module...")
+
+    def open_purchase(self):
+        messagebox.showinfo("Purchases", "Opening Purchase Module...")
+
 
     def logout(self):
         self.root.destroy()
