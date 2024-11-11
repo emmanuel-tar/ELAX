@@ -3,7 +3,8 @@ from tkinter import messagebox
 import mysql.connector
 import bcrypt
 from PIL import Image, ImageTk  # For adding a head icon shape
-
+from sales import open_sales_window
+import sales
 
 # Database connection settings
 config = {
@@ -168,7 +169,7 @@ class AdminScreen:
         # Create a button for each function
         for i, (name, image_path, command) in enumerate(functions):
             # Load the image
-            icon_image = Image.open("")
+            icon_image = Image.open(image_path)
             icon_image = icon_image.resize((80, 80))  # Resize to fit the icon size
             icon_photo = ImageTk.PhotoImage(icon_image)
 
@@ -186,8 +187,14 @@ class AdminScreen:
             button.image = icon_photo  # Keep a reference to avoid garbage collection
             button.grid(row=i // 3, column=i % 3, padx=15, pady=15)
 
+    
     def open_sales(self):
-        messagebox.showinfo("Sales", "Opening Sales Module...")
+        
+        try:
+            sales.open_sales_window()  # This calls the function from sales.py
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to open Sales module: {e}")
+
 
     def open_inventory(self):
         messagebox.showinfo("Inventory", "Opening Inventory Module...")
@@ -215,7 +222,7 @@ class AdminScreen:
 def main():
     # Start the application with the login screen
     root = tk.Tk()
-    app = LoginApp(root)
+    LoginApp(root)
     root.mainloop()
 
 
