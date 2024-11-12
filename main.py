@@ -5,6 +5,8 @@ import bcrypt
 from PIL import Image, ImageTk  # For adding a head icon shape
 from sales import open_sales_window
 import sales
+from employee import open_employee_form
+import employee     # Import the employee form function
 
 # Database connection settings
 config = {
@@ -147,6 +149,9 @@ class AdminScreen:
         tk.Button(root, text="Logout", command=self.logout, font=("Arial", 14)).pack(
             pady=20
         )
+        
+        
+       
 
         # Main function area with icons
         self.create_function_icons()
@@ -187,14 +192,12 @@ class AdminScreen:
             button.image = icon_photo  # Keep a reference to avoid garbage collection
             button.grid(row=i // 3, column=i % 3, padx=15, pady=15)
 
-    
     def open_sales(self):
-        
+
         try:
             sales.open_sales_window()  # This calls the function from sales.py
         except Exception as e:
             messagebox.showerror("Error", f"Failed to open Sales module: {e}")
-
 
     def open_inventory(self):
         messagebox.showinfo("Inventory", "Opening Inventory Module...")
@@ -203,14 +206,16 @@ class AdminScreen:
         messagebox.showinfo("Reports", "Opening Reports Module...")
 
     def open_employees(self):
-        messagebox.showinfo("Employees", "Opening Employees Module...")
+        try:
+            employee.open_employee_form()
+        except Exception as ex:
+            messagebox.showinfo("Employees", "Opening Employees Module...")
 
     def open_settings(self):
         messagebox.showinfo("Settings", "Opening Settings Module...")
 
     def open_purchase(self):
         messagebox.showinfo("Purchases", "Opening Purchase Module...")
-
 
     def logout(self):
         self.root.destroy()
