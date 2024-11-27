@@ -117,6 +117,7 @@ def insert_default_accounts(cursor):
             "username": "waiter",
             "password": "waiter123",
         },
+        {"name": "Emmanuel", "role":"Manager", "username":"Emmanuel", "password":"123456"},
     ]
 
     for user in default_users:

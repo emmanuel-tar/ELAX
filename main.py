@@ -7,6 +7,7 @@ from sales import open_sales_window
 import sales
 from employee import open_employee_form
 import employee     # Import the employee form function
+from purchase import open_purchase_form
 
 # Database connection settings
 config = {
@@ -149,9 +150,6 @@ class AdminScreen:
         tk.Button(root, text="Logout", command=self.logout, font=("Arial", 14)).pack(
             pady=20
         )
-        
-        
-       
 
         # Main function area with icons
         self.create_function_icons()
@@ -215,7 +213,10 @@ class AdminScreen:
         messagebox.showinfo("Settings", "Opening Settings Module...")
 
     def open_purchase(self):
-        messagebox.showinfo("Purchases", "Opening Purchase Module...")
+        try:
+            open_purchase_form()  # This calls the function from purchase.py
+        except Exception as ex:
+            messagebox.showerror("Error", f"Failed to open Purchase module: {ex}")
 
     def logout(self):
         self.root.destroy()
