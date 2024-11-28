@@ -8,6 +8,7 @@ import sales
 from employee import open_employee_form
 import employee     # Import the employee form function
 from purchase import open_purchase_form
+from items import open_item_form
 
 # Database connection settings
 config = {
@@ -198,7 +199,11 @@ class AdminScreen:
             messagebox.showerror("Error", f"Failed to open Sales module: {e}")
 
     def open_inventory(self):
-        messagebox.showinfo("Inventory", "Opening Inventory Module...")
+        try:
+            open_item_form()  # This calls the function from inventory.py
+        except Exception as ex:
+            messagebox.showerror("Error", f"Failed to open Inventory module: {ex}")
+        # messagebox.showinfo("Inventory", "Opening Inventory Module...")
 
     def open_reports(self):
         messagebox.showinfo("Reports", "Opening Reports Module...")
