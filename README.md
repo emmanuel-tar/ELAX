@@ -1,4 +1,68 @@
-Here's a README file and project documentation template for your **ELAX** project. You can adjust it according to the specifics of your application.
+Here's a README file and project documentation template for your **ELAX** project. You can adjust it according to the specifics of your application. This template includes sections for **Features**, **Tech Stack**, **Project Structure**, **Installation**, **Usage**, **Database Schema**, **Contributing**, and **License**. Feel free to modify and expand upon it as needed.
+
+---
+
+# ELAX - Stock Management Software
+
+**ELAX** is a robust stock management software designed to help businesses efficiently track and manage inventory levels, purchases, and sales in real time. Built with **Java** for the backend and **MySQL** as the database, ELAX provides an intuitive, easy-to-use interface for managing stock items, suppliers, and transactions.
+
+## Table of Contents
+
+1. [Features](#features)
+2. [Tech Stack](#tech-stack)
+3. [Project Structure](#project-structure)
+4. [Installation](#installation)
+5. [Usage](#usage)
+6. [Database Schema](#database-schema)
+7. [Contributing](#contributing)
+8. [License](#license)
+
+---
+
+## Features
+
+- **Item Management**: Create, update, view, and delete stock items.
+- **Supplier Management**: Manage supplier details for easy replenishment of stock.
+- **Purchases & Sales Tracking**: Record and manage purchase and sales transactions.
+- **Low Stock Alerts**: Notifications for items with low stock levels.
+- **User-Friendly Interface**: Easy-to-navigate UI built with JavaFX.
+- **Reporting**: Generate reports on stock levels, purchase history, and sales data.
+
+---
+
+## Tech Stack
+
+- **Programming Language**: Java
+- **Database**: MySQL
+- **Framework**: JavaFX (for GUI, if applicable)
+- **Libraries**: JDBC for database connectivity, additional libraries as needed for reporting and file I/O
+
+---
+
+## Project Structure
+
+```plaintext
+ELAX/
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   ├── com/emmanuel/elax/
+│   │   │   │   ├── controllers/   # Controller classes for UI components
+│   │   │   │   ├── models/        # Java classes representing database entities
+│   │   │   │   ├── views/         # JavaFX views (FXML files, if used)
+│   │   │   │   └── utils/         # Utility classes for DB connections, logging, etc.
+│   ├── resources/                 # Static files (e.g., application.properties, CSS)
+│   └── test/                      # Unit tests
+└── README.md
+```
+
+---
+
+## Installation
+
+1. **Clone the Repository**:
+   ```bash
+   git clone
 
 ---
 

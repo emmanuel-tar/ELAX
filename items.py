@@ -26,6 +26,7 @@ def create_inventory_table():
                 quantity INT DEFAULT 0,
                 price DECIMAL(10, 2) NOT NULL,
                 barcode VARCHAR(100) UNIQUE,
+                group_name VARCHAR(255),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
             )
@@ -56,8 +57,8 @@ def fetch_items():
 
 
 # Save or update item in the database
-def save_item(name, description, quantity, price, barcode):
-    if not all([name, quantity, price, barcode]):
+def save_item(name, description, quantity, price, barcode, group_name):
+    if not all([name, quantity, price, barcode, group_name]):
         messagebox.showwarning("Incomplete Data", "Please fill all required fields.")
         return
 
@@ -67,14 +68,15 @@ def save_item(name, description, quantity, price, barcode):
 
         # Insert or update item
         query = """
-            INSERT INTO Inventory (name, description, quantity, price, barcode)
-            VALUES (%s, %s, %s, %s, %s)
+            INSERT INTO Inventory (name, description, quantity, price, barcode, group_name)
+            VALUES (%s, %s, %s, %s, %s, %s)
             ON DUPLICATE KEY UPDATE
                 description = VALUES(description),
                 quantity = VALUES(quantity),
-                price = VALUES(price)
+                price = VALUES(price),
+                group_name = VALUES(group_name)
         """
-        cursor.execute(query, (name, description, quantity, price, barcode))
+        cursor.execute(query, (name, description, quantity, price, barcode, group_name))
         cnx.commit()
         messagebox.showinfo("Success", "Item saved successfully.")
     except mysql.connector.Error as err:
@@ -118,6 +120,7 @@ def open_item_form():
             quantity_spinbox.get(),
             price_entry.get(),
             barcode_entry.get(),
+            group_name_entry.get()
         )
         refresh_item_list()
 
@@ -144,7 +147,7 @@ def open_item_form():
             cnx = mysql.connector.connect(**config)
             cursor = cnx.cursor()
             cursor.execute(
-                "SELECT name, description, quantity, price, barcode FROM Inventory WHERE item_id = %s",
+                "SELECT name, description, quantity, price, barcode, group_name FROM Inventory WHERE item_id = %s",
                 (item_id,),
             )
             item = cursor.fetchone()
@@ -155,6 +158,7 @@ def open_item_form():
                 quantity_spinbox.insert(0, item[2])
                 price_entry.insert(0, item[3])
                 barcode_entry.insert(0, item[4])
+                group_name_entry.insert(0, item[5])
         except mysql.connector.Error as err:
             messagebox.showerror("Database Error", f"Error loading item details: {err}")
         finally:
@@ -168,6 +172,7 @@ def open_item_form():
         quantity_spinbox.delete(0, tk.END)
         price_entry.delete(0, tk.END)
         barcode_entry.delete(0, tk.END)
+        group_name_entry.delete(0, tk.END)
 
     item_window = tk.Toplevel()
     item_window.title("Item Management")
@@ -210,6 +215,10 @@ def open_item_form():
     ttk.Label(form_frame, text="Barcode:").grid(row=4, column=0, padx=5, pady=5)
     barcode_entry = ttk.Entry(form_frame)
     barcode_entry.grid(row=4, column=1, padx=5, pady=5)
+
+    ttk.Label(form_frame, text="Group Name:").grid(row=5, column=0, padx=5, pady=5)
+    group_name_entry = ttk.Entry(form_frame)
+    group_name_entry.grid(row=5, column=1, padx=5, pady=5)
 
     button_frame = ttk.Frame(right_frame)
     button_frame.pack(fill="x", padx=10, pady=10)

@@ -2,11 +2,11 @@ import tkinter as tk
 from tkinter import messagebox
 import mysql.connector
 import bcrypt
-from PIL import Image, ImageTk  # For adding a head icon shape
+from PIL import Image, ImageTk
 from sales import open_sales_window
 import sales
 from employee import open_employee_form
-import employee     # Import the employee form function
+import employee
 from purchase import open_purchase_form
 from items import open_item_form
 
@@ -24,7 +24,7 @@ class LoginApp:
     def __init__(self, root):
         self.root = root
         self.root.title("ELAX POS - Login")
-        self.root.geometry("800x600")  # Full-screen window size
+        self.root.geometry("800x600")
 
         # Variables
         self.selected_username = None
@@ -40,13 +40,28 @@ class LoginApp:
         self.create_employee_boxes()
 
         # Password Entry field and login button (hidden initially)
-        self.password_label = tk.Label(root, text="Enter Password:", font=("Arial", 14))
+        self.password_frame = tk.Frame(root)  # New frame to contain password elements
+
+        self.password_label = tk.Label(
+            self.password_frame, text="Enter Password:", font=("Arial", 14)
+        )
         self.password_input = tk.Entry(
-            root, textvariable=self.password_entry, show="*", font=("Arial", 12)
+            self.password_frame,
+            textvariable=self.password_entry,
+            show="*",
+            font=("Arial", 12),
+            width=20,
         )
         self.login_button = tk.Button(
-            root, text="Login", command=self.login, font=("Arial", 12)
+            self.password_frame,
+            text="Login",
+            command=self.login,
+            font=("Arial", 12),
+            width=10,
         )
+
+        # Bind Enter key to login
+        self.password_input.bind("<Return>", lambda event: self.login())
 
     def get_employees(self):
         # Fetch employee usernames and names from the database
@@ -64,46 +79,63 @@ class LoginApp:
         frame.pack(pady=20)
 
         # Load head icon image
-        head_image = Image.open("head_icon.png")  # Replace with a head icon path
-        head_image = head_image.resize((80, 80))
-        head_icon = ImageTk.PhotoImage(head_image)
+        try:
+            head_image = Image.open("head_icon.png")
+            head_image = head_image.resize((80, 80))
+            head_icon = ImageTk.PhotoImage(head_image)
+        except FileNotFoundError:
+            head_icon = None
 
         # Create a button for each employee
         for i, (username, name) in enumerate(self.employees):
-            # Create employee box
-            box = tk.Frame(frame, width=100, height=130, bg="lightgray")
+            box = tk.Frame(
+                frame,
+                width=100,
+                height=130,
+                bg="lightgray",
+                relief="raised",
+                borderwidth=2,
+            )
             box.grid(row=i // 3, column=i % 3, padx=10, pady=10)
 
-            # Add head icon
-            icon_label = tk.Label(box, image=head_icon, bg="lightgray")
-            icon_label.image = head_icon  # Keep a reference to avoid garbage collection
-            icon_label.pack(pady=5)
+            if head_icon:
+                icon_label = tk.Label(box, image=head_icon, bg="lightgray")
+                icon_label.image = head_icon
+                icon_label.pack(pady=5)
 
-            # Add employee name label
             name_label = tk.Label(box, text=name, font=("Arial", 12), bg="lightgray")
             name_label.pack()
 
-            # Make the box clickable
             box.bind("<Button-1>", lambda e, u=username: self.select_employee(u))
 
     def select_employee(self, username):
-        # Set the selected username
+        # Reset previous selection
         self.selected_username = username
+        self.password_entry.set("")  # Clear previous input
 
-        # Show password entry and login button
-        self.password_label.pack(pady=10)
-        self.password_input.pack(pady=10)
-        self.login_button.pack(pady=20)
+        # Show password entry elements
+        self.password_frame.pack(pady=20)
+        self.password_label.pack(side="left", padx=5)
+        self.password_input.pack(side="left", padx=5)
+        self.login_button.pack(side="left", padx=5)
+
+        # Set focus to password input
+        self.password_input.focus_set()
 
     def login(self):
-        if self.selected_username is None:
-            messagebox.showerror("Error", "Please select an employee")
+        if not self.selected_username:
+            messagebox.showerror("Error", "Please select an employee first!")
             return
 
-        password = self.password_entry.get()
+        password = self.password_entry.get().strip()
 
-        if password:
-            # Connect to the database and verify password
+        if not password:
+            messagebox.showerror("Error", "Please enter your password!")
+            self.password_input.focus_set()
+            return
+
+        # Database verification
+        try:
             cnx = mysql.connector.connect(**config)
             cursor = cnx.cursor()
             cursor.execute(
@@ -113,27 +145,34 @@ class LoginApp:
             result = cursor.fetchone()
             cursor.close()
             cnx.close()
+        except Exception as e:
+            messagebox.showerror("Database Error", f"Connection failed: {str(e)}")
+            return
 
-            if result:
-                stored_password, name, role = result
-                if bcrypt.checkpw(
-                    password.encode("utf-8"), stored_password.encode("utf-8")
-                ):
-                    # Login successful
-                    self.root.destroy()  # Close login window
-                    self.open_admin_screen(name, role)
-                else:
-                    messagebox.showerror("Error", "Incorrect password")
+        if result:
+            stored_password, name, role = result
+            if bcrypt.checkpw(
+                password.encode("utf-8"), stored_password.encode("utf-8")
+            ):
+                self.root.destroy()
+                self.open_admin_screen(name, role)
             else:
-                messagebox.showerror("Error", "User not found")
+                messagebox.showerror("Login Failed", "Incorrect password!")
+                self.password_entry.set("")
+                self.password_input.focus_set()
         else:
-            messagebox.showerror("Error", "Please enter a password")
+            messagebox.showerror("Error", "User not found!")
+            self.password_entry.set("")
+            self.selected_username = None
+            self.password_frame.pack_forget()
 
     def open_admin_screen(self, name, role):
-        # Open the admin screen with the logged-in user's information
         admin_root = tk.Tk()
         AdminScreen(admin_root, name, role)
         admin_root.mainloop()
+
+
+# Rest of the AdminScreen class remains the same...
 
 
 class AdminScreen:
